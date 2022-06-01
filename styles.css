@@ -1,0 +1,226 @@
+:root {
+    --white: #fffbfb;
+    --black: #050505;
+    --page-color: #f2eecb;
+    --light-brown: #dcbe87;
+    --brown: #ad6a34;
+    --dark-brown: #4e1d04;
+    --darker-green: #325453;
+    --green: #508988;
+    --light-green: #9fff9c;
+    --light-red: #ff9c9c;
+    --border-radius: 8px;
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 40px;
+    --container-width: 1200px;
+    --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+/* GENERAL */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+    background-color: var(--light-brown);
+    color: var(--black);
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+button, input {
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+input[type='text'], input[type='number'] {
+    cursor: text;
+}
+
+/* UTILS */
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+}
+
+.btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    transition: filter 0.15s ease-in-out;
+}
+
+.btn:hover {
+    filter: brightness(90%);
+}
+
+.btn:active {
+    transform: scale(0.9);
+}
+
+.btn-add {
+    font-size: 24px;
+    font-weight: 600;
+    background-color: var(--brown);
+    color: var(--white);
+}
+
+.btn-add:hover {
+    background-color: var(--dark-brown);
+}
+
+.btn-light-green {
+    background-color: var(--light-green);
+    color: var(--black);
+}
+
+.btn-light-red {
+    background-color: var(--light-red);
+}
+
+/* HEADER */
+.header {
+    background-color: var(--darker-green);
+    box-shadow: var(--shadow);
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.header .title {
+    color: var(--light-brown);
+}
+
+/* MAIN */
+.main {
+    margin-top: var(--spacing-xs);
+    text-align: center;
+    padding: var(--spacing-xl);
+;}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 20px;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    background-color: var(--page-color);
+    box-shadow: var(--shadow);
+    line-height: 1;
+    color: var(--dark-brown);
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    color: var(--black);
+}
+
+/* FORM */
+.form-container {
+    position: fixed;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    background-color: var(--green);
+    color: var(--white);
+    text-align: center;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 0.2s ease-in-out;
+}
+
+.form-container.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.add-book-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.add-book-form button {
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    color: var(--dark-brown);
+}
+
+.is-read {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 4px;
+    accent-color: var(--white);
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 400px) {
+    .header .container {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      padding-top: var(--spacing-sm);
+    }
+  
+    .main {
+      margin-top: 0;
+    }
+  
+    :root {
+      --spacing-xl: 20px;
+    }
+  }
