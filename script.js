@@ -17,6 +17,10 @@ const overlay = document.getElementById('overlay');
 const addBookForm = document.getElementById('addBookForm');
 const booksGrid = document.getElementById('booksGrid');
 
+const books_total_count = document.getElementById('books_count');
+const read_count = document.getElementById('read_b_count');
+const unread_count = document.getElementById('not_read_b_count');
+
 function openFormContainer() {
     addBookForm.reset();
     formContainer.classList.add('active');
@@ -53,7 +57,7 @@ function updateBooksGrid() {
     clearBooksGrid();
     for(let i=0; i<myLibrary.length; i++) {
         let book = myLibrary[i];
-        
+
         const bookCard = document.createElement('div');
         const title = document.createElement('p');
         const author = document.createElement('p');
@@ -89,7 +93,6 @@ function updateBooksGrid() {
             readBtn.textContent = 'Not read';
             readBtn.classList.add('btn-light-red');
         }
-
         bookCard.appendChild(title);
         bookCard.appendChild(author);
         bookCard.appendChild(pages);
@@ -98,6 +101,11 @@ function updateBooksGrid() {
         bookCard.appendChild(buttonGroup);
         booksGrid.appendChild(bookCard);
     }
+    books_total_count.textContent = myLibrary.length;
+
+    let read = myLibrary.filter((book) => book.haveRead);
+    read_count.textContent = read.length;
+    unread_count.textContent = myLibrary.length - read.length;
 }
 
 function getBookFromInput() {

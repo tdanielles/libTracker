@@ -101,12 +101,22 @@ input[type='text'], input[type='number'] {
 .header .container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: var(--spacing-lg);
+}
+
+.header .container > div > div {
+    display: flex;
 }
 
 .header .title {
     color: var(--light-brown);
+}
+
+.header .book-count {
+    color: var(--light-brown);
+    font-weight: 600;
+    width: max-content;
 }
 
 /* MAIN */
