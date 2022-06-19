@@ -1,4 +1,11 @@
-let myLibrary = [];
+// Get books from local storage or start with empty
+let defaultLibrary = [];
+let library = localStorage.getItem('myLibrary');
+    library = JSON.parse(library || JSON.stringify(defaultLibrary));
+
+function saveToLocalStorage() {
+    localStorage.setItem('myLibrary', JSON.stringify(library));
+}
 
 function Book(title, author, pages, haveRead) {
     this.title = title;
@@ -44,7 +51,8 @@ function addBookToLibrary(e) {
     e.preventDefault();
     const newBook = getBookFromInput();
 
-    myLibrary.push(newBook);
+    library.push(newBook);
+    saveToLocalStorage();
     updateBooksGrid();
     closeFormContainer();
 }
@@ -55,8 +63,8 @@ function clearBooksGrid() {
 
 function updateBooksGrid() {
     clearBooksGrid();
-    for(let i=0; i<myLibrary.length; i++) {
-        let book = myLibrary[i];
+    for(let i=0; i<library.length; i++) {
+        let book = library[i];
 
         const bookCard = document.createElement('div');
         const title = document.createElement('p');
@@ -101,11 +109,11 @@ function updateBooksGrid() {
         bookCard.appendChild(buttonGroup);
         booksGrid.appendChild(bookCard);
     }
-    books_total_count.textContent = myLibrary.length;
+    books_total_count.textContent = library.length;
 
-    let read = myLibrary.filter((book) => book.haveRead);
+    let read = library.filter((book) => book.haveRead);
     read_count.textContent = read.length;
-    unread_count.textContent = myLibrary.length - read.length;
+    unread_count.textContent = library.length - read.length;
 }
 
 function getBookFromInput() {
@@ -116,28 +124,22 @@ function getBookFromInput() {
     return new Book(title, author, pages, haveRead);
 }
 
-function addBookToLibrary(e) {
-    e.preventDefault();
-    const newBook = getBookFromInput();
-
-    myLibrary.push(newBook);
-    updateBooksGrid();
-    closeFormContainer();
-}
-
 function removeBook(e) {
     const title = e.target.parentElement.parentElement.firstChild.innerHTML;
-    myLibrary = myLibrary.filter(book => book.title != title);
+    library = library.filter(book => book.title != title);
+    saveToLocalStorage();
     updateBooksGrid();
 }
 
 function toggleRead(e) {
     const title = e.target.parentElement.parentElement.firstChild.innerHTML;
-    const book = myLibrary.find(book => book.title == title);
+    const book = library.find(book => book.title == title);
     book.haveRead = !book.haveRead;
+    saveToLocalStorage();
     updateBooksGrid();
 }
 
+window.onload = updateBooksGrid();
 addBookBtn.addEventListener('click', openFormContainer);
 overlay.addEventListener('click', closeFormContainer);
 addBookForm.addEventListener('submit', addBookToLibrary);
