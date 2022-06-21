@@ -116,14 +116,6 @@ function updateBooksGrid() {
     unread_count.textContent = library.length - read.length;
 }
 
-function getBookFromInput() {
-    const title = document.getElementById('title').value;
-    const author = document.getElementById('author').value;
-    const pages = document.getElementById('pages').value;
-    const haveRead = document.getElementById('haveRead').checked;
-    return new Book(title, author, pages, haveRead);
-}
-
 function removeBook(e) {
     const title = e.target.parentElement.parentElement.firstChild.innerHTML;
     library = library.filter(book => book.title != title);
