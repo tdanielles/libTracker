@@ -1,0 +1,25 @@
+{
+  "type": "module",
+  "name": "library",
+  "version": "1.0.0",
+  "description": "> A Library application created with HTML, CSS, and Javascript that allows users to add and remove books to the bookshelf. It also saves to your local storage and shows how many books are read and unread.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tdanielles/library.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tdanielles/library/issues"
+  },
+  "homepage": "https://github.com/tdanielles/library#readme",
+  "dependencies": {
+    "firebase": "^9.14.0",
+    "http-server": "^14.1.1"
+  }
+}

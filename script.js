@@ -1,18 +1,100 @@
-// Get books from local storage or start with empty
-let defaultLibrary = [];
-let library = localStorage.getItem('myLibrary');
-    library = JSON.parse(library || JSON.stringify(defaultLibrary));
+import { db } from "./firebase.js";
+import { collection, doc, getDocs, addDoc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js'
 
-function saveToLocalStorage() {
-    localStorage.setItem('myLibrary', JSON.stringify(library));
+let library = [];
+
+async function getBooks() {
+    let books = [];
+    try {
+        const querySnapshot = await getDocs(collection(db, 'books'));
+        querySnapshot.forEach((doc) => {
+            let bookObj = {};
+            bookObj[doc.id] = doc.data();
+            books.push(bookObj);
+        })
+    } catch (e) {
+        console.log('Error with fetching books', e);
+    }
+
+    library = books;
 }
 
-function Book(title, author, pages, haveRead) {
+async function getBookById(id) {
+    const docRef = doc(db, 'books', id);
+    try {
+        const docSnap = await getDoc(docRef);
+        return docSnap.data();
+    } catch (e) {
+        console.log('Could not find document', e);
+    }
+}
+
+async function addBook(title, author, pages, haveRead) {
+    try {
+        await addDoc(collection(db, 'books'), {
+            title: title,
+            author: author,
+            pages: pages,
+            haveRead: haveRead
+        });
+    } catch (e) {
+        console.log('Error adding book to Firebase: ', e);
+    }
+}
+
+async function addBookToLibrary(e) {
+    e.preventDefault();
+    const values = getBookFromInput();
+    addBook(values[0], values[1], values[2], values[3]);
+
+    updateBooksGrid();
+    closeFormContainer();
+}
+
+async function removeBook(e) {
+    const card = e.target.parentElement.parentElement;
+    let id = card.id;
+
+    await deleteBook(id);
+
+    updateBooksGrid();
+}
+
+async function deleteBook(id) {
+    const docRef = doc(db, 'books', id);
+    try {
+        await deleteDoc(docRef);
+    } catch (e) {
+        console.log('Failed to delete doc', e);
+    }
+}
+
+async function toggleRead(e) {
+    const card = e.target.parentElement.parentElement;
+    let id = card.id;
+
+    await updateRead(id);
+
+    updateBooksGrid();
+}
+
+async function updateRead(id) {
+    let bookObj = await getBookById(id);
+    const docRef = doc(db, 'books', id);
+    
+    let newStatus = !bookObj.haveRead;
+
+    updateDoc(docRef, {
+        haveRead: newStatus
+    });
+}
+
+/* function Book(title, author, pages, haveRead) {
     this.title = title;
     this.author = author;
     this.pages = pages;
     this.haveRead = haveRead;
-}
+} */
 
 const addBookBtn = document.getElementById('addBookBtn');
 
@@ -40,33 +122,35 @@ function closeFormContainer() {
 }
 
 function getBookFromInput() {
-    const title = document.getElementById('title').value;
-    const author = document.getElementById('author').value;
-    const pages = document.getElementById('pages').value;
-    const haveRead = document.getElementById('haveRead').checked;
-    return new Book(title, author, pages, haveRead);
-}
-
-function addBookToLibrary(e) {
-    e.preventDefault();
-    const newBook = getBookFromInput();
-
-    library.push(newBook);
-    saveToLocalStorage();
-    updateBooksGrid();
-    closeFormContainer();
+    let values = [];
+    values[0] = document.getElementById('title').value;
+    values[1] = document.getElementById('author').value;
+    values[2] = document.getElementById('pages').value;
+    values[3] = document.getElementById('haveRead').checked;
+    return values;
 }
 
 function clearBooksGrid() {
     booksGrid.innerHTML = '';
 }
 
-function updateBooksGrid() {
+async function updateBooksGrid() {
     clearBooksGrid();
+    await getBooks();
+
+    let numberRead = 0;
     for(let i=0; i<library.length; i++) {
-        let book = library[i];
+        let book = {};
+        let id;
+
+        for (const [bookId, bookObj] of Object.entries(library[i])) {
+            id = bookId;
+            book = bookObj;
+        }
 
         const bookCard = document.createElement('div');
+        bookCard.id = id;
+
         const title = document.createElement('p');
         const author = document.createElement('p');
         const pages = document.createElement('p');
@@ -83,20 +167,21 @@ function updateBooksGrid() {
         removeBtn.addEventListener('click', removeBook);
 
         title.textContent = `${book.title}`;
-        title.style.fontSize = "30px";
-        title.style.fontWeight = "bolder";
+        title.style.fontSize = '30px';
+        title.style.fontWeight = 'bolder';
 
         author.textContent = book.author;
-        author.style.fontWeight = "lighter";
+        author.style.fontWeight = 'lighter';
 
         pages.textContent = `${book.pages} pages`
-        pages.style.fontWeight = "lighter";
+        pages.style.fontWeight = 'lighter';
 
         removeBtn.textContent = 'Remove';
 
         if (book.haveRead) {
             readBtn.textContent = 'Read';
             readBtn.classList.add('btn-light-green');
+            numberRead++;
         } else {
             readBtn.textContent = 'Not read';
             readBtn.classList.add('btn-light-red');
@@ -111,24 +196,8 @@ function updateBooksGrid() {
     }
     books_total_count.textContent = library.length;
 
-    let read = library.filter((book) => book.haveRead);
-    read_count.textContent = read.length;
-    unread_count.textContent = library.length - read.length;
-}
-
-function removeBook(e) {
-    const title = e.target.parentElement.parentElement.firstChild.innerHTML;
-    library = library.filter(book => book.title != title);
-    saveToLocalStorage();
-    updateBooksGrid();
-}
-
-function toggleRead(e) {
-    const title = e.target.parentElement.parentElement.firstChild.innerHTML;
-    const book = library.find(book => book.title == title);
-    book.haveRead = !book.haveRead;
-    saveToLocalStorage();
-    updateBooksGrid();
+    read_count.textContent = numberRead;
+    unread_count.textContent = library.length - numberRead;
 }
 
 window.onload = updateBooksGrid();
