@@ -5,6 +5,7 @@ import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from
 // auth stuff
 const logInBtn = document.getElementById("logInBtn");
 const logOutBtn = document.getElementById("logOutBtn");
+const greeting = document.getElementById("greeting");
 
 async function signIn() {
     const provider = new GoogleAuthProvider();
@@ -26,14 +27,22 @@ function initFirebaseAuth() {
     onAuthStateChanged(auth, authStateObserver);
 }
 
+function isUserSignedIn() {
+    return !!auth.currentUser;
+}
+
 function authStateObserver(user) {
     if (user) {
         logInBtn.classList.remove("active");
+        greeting.classList.add("active");
         logOutBtn.classList.add("active");
-        logOutBtn.textContent = "Hi, " + auth.currentUser.displayName.split(' ')[0] + "!";
+        greeting.textContent = "Hi, " + auth.currentUser.displayName.split(' ')[0] + "!";
+        addBookBtn.textContent = "+ Add book";
     } else {
         logInBtn.classList.add("active");
+        greeting.classList.remove("active");
         logOutBtn.classList.remove("active");
+        addBookBtn.textContent = "Sign in to get started!";
     }
 }
 
@@ -166,9 +175,12 @@ const read_count = document.getElementById('read_b_count');
 const unread_count = document.getElementById('not_read_b_count');
 
 function openFormContainer() {
-    addBookForm.reset();
-    formContainer.classList.add('active');
-    overlay.classList.add('active');
+    if (isUserSignedIn()) {
+        addBookForm.reset();
+        formContainer.classList.add('active');
+        overlay.classList.add('active');
+    }
+    
 }
 
 function closeFormContainer() {

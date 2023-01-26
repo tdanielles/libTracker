@@ -93,12 +93,15 @@ input[type='text'], input[type='number'] {
 }
 
 .btn-log-in, .btn-log-out {
-    background-color: var(--brown);
-    color: var(--white);
+    background-color: var(--light-brown);
+    color: var(--darker-green);
+    border: 1.5px solid var(--light-brown);
 }
 
 .btn-log-in:hover, .btn-log-out:hover {
-    background-color: var(--dark-brown);
+    background-color: var(--darker-green);
+    color: var(--light-brown);
+    border: 1.5px solid var(--light-brown);
 }
 
 /* HEADER */
@@ -161,6 +164,12 @@ input[type='text'], input[type='number'] {
 
 .logged-in .active, .logged-out .active {
     visibility: visible;
+}
+
+.greeting {
+    color: var(--light-brown);
+    font-weight: 600;
+    visibility: hidden;
 }
 
 /* MAIN */
