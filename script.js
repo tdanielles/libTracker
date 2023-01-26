@@ -1,6 +1,46 @@
-import { db } from "./firebase.js";
-import { collection, doc, getDocs, addDoc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js'
+import { db , auth } from "./firebase.js";
+import { collection, doc, getDocs, addDoc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js';
+import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js';
 
+// auth stuff
+const logInBtn = document.getElementById("logInBtn");
+const logOutBtn = document.getElementById("logOutBtn");
+
+async function signIn() {
+    const provider = new GoogleAuthProvider();
+    try {
+        await signInWithPopup(auth, provider);
+        updateBooksGrid();
+    } catch (e) {
+        console.log("Sign in pop up error");
+    }
+    
+}
+
+function signOutUser() {
+    signOut(auth);
+    updateBooksGrid();
+}
+
+function initFirebaseAuth() {
+    onAuthStateChanged(auth, authStateObserver);
+}
+
+function authStateObserver(user) {
+    if (user) {
+        logInBtn.classList.remove("active");
+        logOutBtn.classList.add("active");
+        logOutBtn.textContent = "Hi, " + auth.currentUser.displayName.split(' ')[0] + "!";
+    } else {
+        logInBtn.classList.add("active");
+        logOutBtn.classList.remove("active");
+    }
+}
+
+logInBtn.addEventListener("click", signIn);
+logOutBtn.addEventListener("click", signOutUser);
+
+// firestore stuff
 let library = [];
 
 async function getBooks() {
@@ -8,9 +48,11 @@ async function getBooks() {
     try {
         const querySnapshot = await getDocs(collection(db, 'books'));
         querySnapshot.forEach((doc) => {
-            let bookObj = {};
-            bookObj[doc.id] = doc.data();
-            books.push(bookObj);
+            if (doc.get("ownerId") == auth.currentUser.uid) {
+                let bookObj = {};
+                bookObj[doc.id] = doc.data();
+                books.push(bookObj);
+            }
         })
     } catch (e) {
         console.log('Error with fetching books', e);
@@ -32,6 +74,7 @@ async function getBookById(id) {
 async function addBook(title, author, pages, haveRead) {
     try {
         await addDoc(collection(db, 'books'), {
+            ownerId: auth.currentUser.uid,
             title: title,
             author: author,
             pages: pages,
@@ -45,9 +88,14 @@ async function addBook(title, author, pages, haveRead) {
 async function addBookToLibrary(e) {
     e.preventDefault();
     const values = getBookFromInput();
-    addBook(values[0], values[1], values[2], values[3]);
-
-    updateBooksGrid();
+    
+    if (auth.currentUser) {
+        addBook(values[0], values[1], values[2], values[3]);
+        updateBooksGrid();
+    } else {
+        alert("You must be signed in to add and save books!");
+    }
+    
     closeFormContainer();
 }
 
@@ -55,9 +103,12 @@ async function removeBook(e) {
     const card = e.target.parentElement.parentElement;
     let id = card.id;
 
-    await deleteBook(id);
-
-    updateBooksGrid();
+    if (auth.currentUser) {
+        await deleteBook(id);
+        updateBooksGrid();
+    } else {
+        alert("You must be signed in to delete books!");
+    }
 }
 
 async function deleteBook(id) {
@@ -73,9 +124,12 @@ async function toggleRead(e) {
     const card = e.target.parentElement.parentElement;
     let id = card.id;
 
-    await updateRead(id);
-
-    updateBooksGrid();
+    if (auth.currentUser) {
+        await updateRead(id);
+        updateBooksGrid();
+    } else {
+        alert("You must be signed in to make changes!");
+    }
 }
 
 async function updateRead(id) {
@@ -96,6 +150,7 @@ async function updateRead(id) {
     this.haveRead = haveRead;
 } */
 
+// user interface stuff
 const addBookBtn = document.getElementById('addBookBtn');
 
 const formContainer = document.getElementById('formContainer');
@@ -135,6 +190,7 @@ function clearBooksGrid() {
 }
 
 async function updateBooksGrid() {
+    initFirebaseAuth(); //
     clearBooksGrid();
     await getBooks();
 

@@ -92,6 +92,15 @@ input[type='text'], input[type='number'] {
     background-color: var(--light-red);
 }
 
+.btn-log-in, .btn-log-out {
+    background-color: var(--brown);
+    color: var(--white);
+}
+
+.btn-log-in:hover, .btn-log-out:hover {
+    background-color: var(--dark-brown);
+}
+
 /* HEADER */
 .header {
     background-color: var(--darker-green);
@@ -101,7 +110,7 @@ input[type='text'], input[type='number'] {
 .header .container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: var(--spacing-lg);
 }
 
@@ -110,13 +119,48 @@ input[type='text'], input[type='number'] {
 }
 
 .header .title {
+    position: absolute;
+    left: var(--spacing-lg);
+    top: var(--spacing-lg)*2;
     color: var(--light-brown);
 }
 
 .header .book-count {
     color: var(--light-brown);
     font-weight: 600;
-    width: max-content;
+}
+
+.header .total_books {
+    display: flex;
+    justify-content: center;
+}
+
+.header .total_read {
+    display: flex;
+    justify-content: center;
+}
+
+.header .total_unread {
+    display: flex;
+    justify-content: center;
+}
+
+.logged-out, .logged-in {
+    position: absolute;
+    right: var(--spacing-lg);
+    top: var(--spacing-lg)*2;
+    visibility: hidden;
+}
+
+.logged-in {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.logged-in .active, .logged-out .active {
+    visibility: visible;
 }
 
 /* MAIN */
@@ -224,6 +268,18 @@ input[type='text'], input[type='number'] {
       flex-direction: column;
       gap: var(--spacing-md);
       padding-top: var(--spacing-sm);
+    }
+
+    .header .title {
+        font-size: 1.5em;
+    }
+
+    .book-count div {
+        font-size: 15px;
+    }
+
+    .btn-log-in, .btn-log-out {
+        font-size: 15px;
     }
   
     .main {
